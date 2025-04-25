@@ -34,21 +34,98 @@ interface LedgerEntry {
 
 const Marketplace: React.FC = () => {
   const { wallet } = useAuth();
-  const [mode, setMode] = useState<'buy' | 'sell'>('buy');
+  const [mode, setMode] = useState<'buy' | 'sell'>(() => {
+    const savedMode = localStorage.getItem('marketplace-mode');
+    return savedMode === 'buy' || savedMode === 'sell' ? savedMode as 'buy' | 'sell' : 'buy';
+  });
   const [prices, setPrices] = useState<PriceData[]>([]);
-  const [region, setRegion] = useState(REGIONS[0].name);
-  const [sellRegion, setSellRegion] = useState(REGIONS[0].name);
-  const [ethAmount, setEthAmount] = useState('');
-  const [address, setAddress] = useState(wallet || '');
-  const [privateKey, setPrivateKey] = useState('');
-  const [tokenId, setTokenId] = useState('');
-  const [estimatedCredits, setEstimatedCredits] = useState('0');
-  const [creditsToSell, setCreditsToSell] = useState('');
-  const [calculatedEthForSale, setCalculatedEthForSale] = useState('');
-  const [ledger, setLedger] = useState<LedgerEntry[]>([]);
-  const [creditBalance, setCreditBalance] = useState(0);
+  const [region, setRegion] = useState(() => {
+    return localStorage.getItem('marketplace-region') || REGIONS[0].name;
+  });
+  const [sellRegion, setSellRegion] = useState(() => {
+    return localStorage.getItem('marketplace-sellRegion') || REGIONS[0].name;
+  });
+  const [ethAmount, setEthAmount] = useState(() => {
+    return localStorage.getItem('marketplace-ethAmount') || '';
+  });
+  const [address, setAddress] = useState(() => {
+    return localStorage.getItem('marketplace-address') || wallet || '';
+  });
+  const [privateKey, setPrivateKey] = useState(() => {
+    return localStorage.getItem('marketplace-privateKey') || '';
+  });
+  const [tokenId, setTokenId] = useState(() => {
+    return localStorage.getItem('marketplace-tokenId') || '';
+  });
+  const [estimatedCredits, setEstimatedCredits] = useState(() => {
+    return localStorage.getItem('marketplace-estimatedCredits') || '0';
+  });
+  const [creditsToSell, setCreditsToSell] = useState(() => {
+    return localStorage.getItem('marketplace-creditsToSell') || '';
+  });
+  const [calculatedEthForSale, setCalculatedEthForSale] = useState(() => {
+    return localStorage.getItem('marketplace-calculatedEthForSale') || '';
+  });
+  const [ledger, setLedger] = useState<LedgerEntry[]>(() => {
+    const savedLedger = localStorage.getItem('marketplace-ledger');
+    return savedLedger ? JSON.parse(savedLedger) : [];
+  });
+  const [creditBalance, setCreditBalance] = useState(() => {
+    // Use parseFloat instead of parseInt to keep decimals
+    return parseFloat(localStorage.getItem('marketplace-creditBalance') || '0');
+  });
   const [loading, setLoading] = useState(false);
   const [loadingPrices, setLoadingPrices] = useState(true);
+
+  // Save state to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('marketplace-mode', mode);
+  }, [mode]);
+
+  useEffect(() => {
+    localStorage.setItem('marketplace-region', region);
+  }, [region]);
+
+  useEffect(() => {
+    localStorage.setItem('marketplace-sellRegion', sellRegion);
+  }, [sellRegion]);
+
+  useEffect(() => {
+    localStorage.setItem('marketplace-ethAmount', ethAmount);
+  }, [ethAmount]);
+
+  useEffect(() => {
+    localStorage.setItem('marketplace-address', address);
+  }, [address]);
+
+  useEffect(() => {
+    localStorage.setItem('marketplace-privateKey', privateKey);
+  }, [privateKey]);
+
+  useEffect(() => {
+    localStorage.setItem('marketplace-tokenId', tokenId);
+  }, [tokenId]);
+
+  useEffect(() => {
+    localStorage.setItem('marketplace-estimatedCredits', estimatedCredits);
+  }, [estimatedCredits]);
+
+  useEffect(() => {
+    localStorage.setItem('marketplace-creditsToSell', creditsToSell);
+  }, [creditsToSell]);
+
+  useEffect(() => {
+    localStorage.setItem('marketplace-calculatedEthForSale', calculatedEthForSale);
+  }, [calculatedEthForSale]);
+
+  useEffect(() => {
+    localStorage.setItem('marketplace-ledger', JSON.stringify(ledger));
+  }, [ledger]);
+
+  useEffect(() => {
+    // Keep as string to preserve decimals
+    localStorage.setItem('marketplace-creditBalance', creditBalance.toString());
+  }, [creditBalance]);
 
   useEffect(() => {
     if (wallet) setAddress(wallet);
@@ -166,10 +243,8 @@ const Marketplace: React.FC = () => {
         ...prev,
       ]);
   
-      // ⬇️ Subtract sold credits from current credit balance
       setCreditBalance((prev) => prev - parseFloat(res.data.ledger.credits));
   
-      // Reset form
       setTokenId('');
       setCreditsToSell('');
       setCalculatedEthForSale('');

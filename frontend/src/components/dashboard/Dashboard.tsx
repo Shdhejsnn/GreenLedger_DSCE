@@ -55,11 +55,10 @@ const Dashboard: React.FC = () => {
         const balanceInEth = balanceInWei / 1e18;
         setEthBalance(balanceInEth.toFixed(4));
 
-        // Fetch carbon credits from the marketplace
-        if (carbonPrices.length > 0) {
-          const price = carbonPrices.find((p: CarbonPriceData) => p.region === 'European Union');
-          setCarbonCredits(price ? parseFloat(price.price.toFixed(2)) : 0);
-        }
+        // Get the credit balance from localStorage (same key used in Marketplace)
+// Get credit balance from localStorage (shared with Marketplace)
+const savedCredits = localStorage.getItem('marketplace-creditBalance');
+setCarbonCredits(savedCredits ? parseFloat(savedCredits) : 0); // Use parseFloat here
       } catch (err) {
         console.error("Dashboard Error:", err);
       } finally {
