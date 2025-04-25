@@ -9,10 +9,11 @@ import Dashboard from './components/dashboard/Dashboard';
 import Marketplace from './components/dashboard/Marketplace';
 import CarbonProjects from './components/carbon/CarbonProjects';
 import CarbonNews from './components/carbon/CarbonNews';
+import GreenScore from './components/dashboard/GreenScore'; // Import GreenScore component
 import Modal from './components/ui/Modal';
 import RegisterLogin from './components/auth/RegisterLogin';
 
-type Page = 'dashboard' | 'marketplace' | 'projects' | 'news';
+type Page = 'dashboard' | 'marketplace' | 'projects' | 'news' | 'green-score'; // Add 'green-score' to the union type
 
 const AppContent: React.FC = () => {
   const { isLoggedIn } = useAuth();
@@ -37,7 +38,8 @@ const AppContent: React.FC = () => {
             'dashboard': <Dashboard />,
             'marketplace': <Marketplace />,
             'projects': <CarbonProjects />,
-            'news': <CarbonNews />
+            'news': <CarbonNews />,
+            'green-score': <GreenScore /> // Add GreenScore to the page rendering logic
           }[activePage]
         ) : (
           <LandingPage onOpenAuthModal={() => setShowAuthModal(true)} />

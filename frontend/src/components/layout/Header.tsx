@@ -1,13 +1,13 @@
 import React from 'react';
-import { Leaf, LogOut } from 'lucide-react';
+import { Leaf, LogOut, Award } from 'lucide-react'; // Import Award icon
 import ThemeToggle from '../ui/ThemeToggle';
 import Button from '../ui/Button';
 import { useAuth } from '../../context/AuthContext';
 
 interface HeaderProps {
   onOpenAuthModal?: () => void;
-  activePage: 'dashboard' | 'marketplace' | 'projects' | 'news';
-  onPageChange: (page: 'dashboard' | 'marketplace' | 'projects' | 'news') => void;
+  activePage: 'dashboard' | 'marketplace' | 'projects' | 'news' | 'green-score'; // Add 'green-score' to the union type
+  onPageChange: (page: 'dashboard' | 'marketplace' | 'projects' | 'news' | 'green-score') => void; // Update onPageChange type
 }
 
 const Header: React.FC<HeaderProps> = ({ 
@@ -68,6 +68,19 @@ const Header: React.FC<HeaderProps> = ({
               onClick={() => onPageChange('news')}
             >
               Market News
+            </button>
+            <button 
+              className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                activePage === 'green-score' 
+                  ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200' 
+                  : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
+              }`}
+              onClick={() => onPageChange('green-score')}
+            >
+              <span className="flex items-center">
+                <Award className="h-4 w-4 mr-1" />
+                Green Score
+              </span>
             </button>
           </nav>
         )}
