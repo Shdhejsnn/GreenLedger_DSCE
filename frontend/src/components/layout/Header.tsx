@@ -1,13 +1,13 @@
 import React from 'react';
-import { Leaf, LogOut } from 'lucide-react';
+import { Leaf, LogOut, Award } from 'lucide-react'; // Import Award icon
 import ThemeToggle from '../ui/ThemeToggle';
 import Button from '../ui/Button';
 import { useAuth } from '../../context/AuthContext';
 
 interface HeaderProps {
   onOpenAuthModal?: () => void;
-  activePage: 'dashboard' | 'marketplace' | 'projects' | 'news';
-  onPageChange: (page: 'dashboard' | 'marketplace' | 'projects' | 'news') => void;
+  activePage: 'dashboard' | 'marketplace' | 'projects' | 'news' | 'calculator'; // <-- Added 'calculator'
+  onPageChange: (page: 'dashboard' | 'marketplace' | 'projects' | 'news' | 'calculator') => void; // <-- Added 'calculator'
 }
 
 const Header: React.FC<HeaderProps> = ({ 
@@ -29,46 +29,25 @@ const Header: React.FC<HeaderProps> = ({
         {/* Navigation (only shown when logged in) */}
         {isLoggedIn && (
           <nav className="hidden md:flex space-x-4">
-            <button 
-              className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                activePage === 'dashboard' 
-                  ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200' 
-                  : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
-              }`}
-              onClick={() => onPageChange('dashboard')}
-            >
-              Dashboard
-            </button>
-            <button 
-              className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                activePage === 'marketplace' 
-                  ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200' 
-                  : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
-              }`}
-              onClick={() => onPageChange('marketplace')}
-            >
-              Marketplace
-            </button>
-            <button 
-              className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                activePage === 'projects' 
-                  ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200' 
-                  : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
-              }`}
-              onClick={() => onPageChange('projects')}
-            >
-              Carbon Projects
-            </button>
-            <button 
-              className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                activePage === 'news' 
-                  ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200' 
-                  : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
-              }`}
-              onClick={() => onPageChange('news')}
-            >
-              Market News
-            </button>
+            {[
+              { key: 'dashboard', label: 'Dashboard' },
+              { key: 'marketplace', label: 'Marketplace' },
+              { key: 'projects', label: 'Carbon Projects' },
+              { key: 'news', label: 'Market News' },
+              { key: 'calculator', label: 'Carbon Calculator' }, // <-- Added this
+            ].map(({ key, label }) => (
+              <button
+                key={key}
+                className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                  activePage === key
+                    ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200'
+                    : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
+                }`}
+                onClick={() => onPageChange(key as HeaderProps['activePage'])}
+              >
+                {label}
+              </button>
+            ))}
           </nav>
         )}
 
