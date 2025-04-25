@@ -6,7 +6,7 @@ require("dotenv").config();
 const web3 = new Web3("http://127.0.0.1:7545");
 
 // ✅ Paste your deployed contract address here
-const contractAddress = "0x75e5986202c9F51D74B3f870678715CAb8628157"; // 👈 Update this
+const contractAddress = "0x2336B3c5857F885E25d38C8268E5a76482abD494"; // 👈 Update this
 
 // ✅ Load ABI from artifacts
 const abiPath = path.resolve(__dirname, "../smart-contracts/artifacts/contracts/GreenLedger.sol/GreenLedger.json");
