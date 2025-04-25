@@ -9,10 +9,11 @@ import Dashboard from './components/dashboard/Dashboard';
 import Marketplace from './components/dashboard/Marketplace';
 import CarbonProjects from './components/carbon/CarbonProjects';
 import CarbonNews from './components/carbon/CarbonNews';
+import CarbonCalculator from './components/calculator/CarbonCalculator'; // <-- Added
 import Modal from './components/ui/Modal';
 import RegisterLogin from './components/auth/RegisterLogin';
 
-type Page = 'dashboard' | 'marketplace' | 'projects' | 'news';
+type Page = 'dashboard' | 'marketplace' | 'projects' | 'news' | 'calculator'; // <-- Added 'calculator'
 
 const AppContent: React.FC = () => {
   const { isLoggedIn } = useAuth();
@@ -37,7 +38,8 @@ const AppContent: React.FC = () => {
             'dashboard': <Dashboard />,
             'marketplace': <Marketplace />,
             'projects': <CarbonProjects />,
-            'news': <CarbonNews />
+            'news': <CarbonNews />,
+            'calculator': <CarbonCalculator /> // <-- Added
           }[activePage]
         ) : (
           <LandingPage onOpenAuthModal={() => setShowAuthModal(true)} />
