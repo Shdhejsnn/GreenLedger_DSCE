@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'; 
 import axios from 'axios';
 import { ArrowUpDown, TrendingUp, ExternalLink, Loader, BarChart4 } from 'lucide-react';
+import { QRCodeSVG } from 'qrcode.react';
 import Card from '../ui/Card';
 import Button from '../ui/Button';
 import Input from '../ui/Input';
@@ -30,6 +31,14 @@ interface LedgerEntry {
   amount: string;
   ethAmount: string;
   party: string;
+}
+
+interface VerificationData {
+  owner: string;
+  region: string;
+  credits: string;
+  tokenId?: string;
+  txHash?: string;
 }
 
 const Marketplace: React.FC = () => {
@@ -71,11 +80,22 @@ const Marketplace: React.FC = () => {
     return savedLedger ? JSON.parse(savedLedger) : [];
   });
   const [creditBalance, setCreditBalance] = useState(() => {
-    // Use parseFloat instead of parseInt to keep decimals
     return parseFloat(localStorage.getItem('marketplace-creditBalance') || '0');
   });
   const [loading, setLoading] = useState(false);
   const [loadingPrices, setLoadingPrices] = useState(true);
+  const [verificationData, setVerificationData] = useState<VerificationData | null>(null);
+
+  // Generate a human-readable verification string
+  const getVerificationString = () => {
+    if (!verificationData) return '';
+    return `GreenLedger Verification\n
+Owner: ${verificationData.owner}\n
+Region: ${verificationData.region}\n
+Credits: ${verificationData.credits}\n
+${verificationData.tokenId ? `Token ID: ${verificationData.tokenId}\n` : ''}
+${verificationData.txHash ? `TX: ${verificationData.txHash}` : ''}`;
+  };
 
   // Save state to localStorage whenever it changes
   useEffect(() => {
@@ -123,7 +143,6 @@ const Marketplace: React.FC = () => {
   }, [ledger]);
 
   useEffect(() => {
-    // Keep as string to preserve decimals
     localStorage.setItem('marketplace-creditBalance', creditBalance.toString());
   }, [creditBalance]);
 
@@ -190,6 +209,14 @@ const Marketplace: React.FC = () => {
       });
 
       alert(`✅ Transaction successful! TX: ${res.data.txHash}`);
+      setVerificationData({
+        owner: address,
+        region,
+        credits: estimatedCredits,
+        tokenId: res.data.ledger?.tokenId || undefined,
+        txHash: res.data.txHash
+      });
+      
       setLedger((prev) => [
         {
           type: "BUY",
@@ -268,6 +295,46 @@ const Marketplace: React.FC = () => {
         </div>
       </Card>
 
+      {/* Verification Block - Only shown after purchase */}
+      {verificationData && (
+        <Card className="mb-6">
+          <h3 className="text-lg font-semibold mb-4">✅ Credit Ownership Verification</h3>
+          <div className="flex flex-col md:flex-row gap-6 items-center">
+            <div className="space-y-2 flex-1">
+              <p><strong>Owner:</strong> {verificationData.owner}</p>
+              <p><strong>Region:</strong> {verificationData.region}</p>
+              <p><strong>Credits:</strong> {verificationData.credits}</p>
+              {verificationData.tokenId && (
+                <p><strong>Token ID:</strong> {verificationData.tokenId}</p>
+              )}
+              {verificationData.txHash && (
+                <p>
+                  <strong>Transaction:</strong>{" "}
+                  <a 
+                    href={`https://sepolia.etherscan.io/tx/${verificationData.txHash}`} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-blue-500 hover:underline"
+                  >
+                    {verificationData.txHash.slice(0, 10)}...{verificationData.txHash.slice(-4)}
+                  </a>
+                </p>
+              )}
+            </div>
+            <div className="p-4 bg-white rounded border flex flex-col items-center">
+              <QRCodeSVG 
+                value={getVerificationString()}
+                size={128}
+                level="H"
+                includeMargin={true}
+              />
+              <p className="mt-2 text-xs text-gray-500">Scan to verify ownership</p>
+            </div>
+          </div>
+        </Card>
+      )}
+
+      {/* Rest of your component remains exactly the same */}
       {/* Main Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
         {/* Prices */}
