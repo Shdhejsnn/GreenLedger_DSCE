@@ -4,11 +4,8 @@ const { contract, web3 } = require("../contract");
 const Company = require("../models/companyModels");
 const Transaction = require("../models/transactionsModels");
 
-<<<<<<< HEAD
 const ownerAddress = "0x412531A590ebfcc251a7323220788a2FEb082358"; // 💡 Ganache deployer
-=======
-const ownerAddress = "0xb166618AB435aC23c5BD20d47d825A74E9Be35d2"; // 💡 Ganache deployer
->>>>>>> 942dd7dbcefcf98d1519a7920640148a964162cc
+
 
 // ✅ Register company
 router.post("/register", async (req, res) => {
