@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Car, Zap, Droplet, Plane, ShoppingBag, Factory } from 'lucide-react';
 import Card from '../ui/Card';
 import Input from '../ui/Input';
 import Select from '../ui/Select';
 import Button from '../ui/Button';
+import { useEnvironmentalData } from '../../context/EnvironmentalContext';
 
 interface OffsetSource {
   type: string;
@@ -15,10 +16,11 @@ interface SourceType {
   value: string;
   label: string;
   unit: string;
-  icon: () => React.ReactNode;
+  icon: React.ReactNode;
 }
 
 const CarbonCalculator: React.FC = () => {
+  const { addCarbonOffset, addWaterUsage, addEnergyUsage } = useEnvironmentalData();
   const [sources, setSources] = useState<OffsetSource[]>([]);
   const [currentSource, setCurrentSource] = useState<OffsetSource>({
     type: 'transportation',
@@ -29,19 +31,21 @@ const CarbonCalculator: React.FC = () => {
   const [recommendations, setRecommendations] = useState<string[]>([]);
 
   const sourceTypes: SourceType[] = [
-    { value: 'transportation', label: 'Transportation', unit: 'km', icon: () => <ArrowRight /> },
-    { value: 'electricity', label: 'Electricity Usage', unit: 'kWh', icon: () => <ArrowRight /> },
-    { value: 'flights', label: 'Air Travel', unit: 'km', icon: () => <ArrowRight /> },
-    { value: 'purchases', label: 'Product Purchases', unit: 'items', icon: () => <ArrowRight /> },
-    { value: 'industrial', label: 'Industrial Processes', unit: 'kg', icon: () => <ArrowRight /> },
+    { value: 'transportation', label: 'Transportation', unit: 'km', icon: <Car className="h-5 w-5" /> },
+    { value: 'electricity', label: 'Electricity Usage', unit: 'kWh', icon: <Zap className="h-5 w-5" /> },
+    { value: 'water', label: 'Water Usage', unit: 'm³', icon: <Droplet className="h-5 w-5" /> },
+    { value: 'flights', label: 'Air Travel', unit: 'km', icon: <Plane className="h-5 w-5" /> },
+    { value: 'purchases', label: 'Product Purchases', unit: 'items', icon: <ShoppingBag className="h-5 w-5" /> },
+    { value: 'industrial', label: 'Industrial Processes', unit: 'kg', icon: <Factory className="h-5 w-5" /> },
   ];
 
   const offsetFactors: Record<string, number> = {
-    transportation: 0.1,
-    electricity: 0.4,
-    flights: 0.3,
-    purchases: 8,
-    industrial: 2,
+    transportation: 0.1,    // kg CO2 per km
+    electricity: 0.4,       // kg CO2 per kWh
+    water: 0.2,             // kg CO2 per m³
+    flights: 0.3,           // kg CO2 per km
+    purchases: 8,           // kg CO2 per item
+    industrial: 2,          // kg CO2 per kg
   };
 
   const handleAddSource = () => {
@@ -49,22 +53,47 @@ const CarbonCalculator: React.FC = () => {
     setSources([...sources, currentSource]);
     setTotalOffset(totalOffset + offset);
 
+    // Update the environmental impact data
+    switch (currentSource.type) {
+      case 'transportation':
+      case 'flights':
+      case 'purchases':
+      case 'industrial':
+        addCarbonOffset(offset);
+        break;
+      case 'water':
+        addWaterUsage(currentSource.amount);
+        break;
+      case 'electricity':
+        addEnergyUsage(currentSource.amount);
+        break;
+    }
+
     const newRecommendations = [];
     switch (currentSource.type) {
       case 'transportation':
-        newRecommendations.push('Consider carbon offset programs for your travel');
+        newRecommendations.push('Consider public transportation or carpooling');
+        newRecommendations.push('Switch to electric or hybrid vehicles');
         break;
       case 'electricity':
         newRecommendations.push('Switch to renewable energy sources');
+        newRecommendations.push('Invest in energy-efficient appliances');
+        break;
+      case 'water':
+        newRecommendations.push('Install water-saving fixtures and repair leaks');
+        newRecommendations.push('Collect rainwater for non-potable uses');
         break;
       case 'flights':
-        newRecommendations.push('Consider using carbon offset programs for flights');
+        newRecommendations.push('Consider video conferencing instead of short flights');
+        newRecommendations.push('Choose direct flights when possible');
         break;
       case 'purchases':
-        newRecommendations.push('Choose low-carbon products');
+        newRecommendations.push('Choose products with minimal packaging');
+        newRecommendations.push('Buy locally produced goods');
         break;
       case 'industrial':
-        newRecommendations.push('Implement energy-efficient technologies in production');
+        newRecommendations.push('Implement energy-efficient technologies');
+        newRecommendations.push('Optimize production processes');
         break;
     }
 
@@ -98,7 +127,12 @@ const CarbonCalculator: React.FC = () => {
               label="Source Type"
               options={sourceTypes.map((type) => ({
                 value: type.value,
-                label: type.label,
+                label: (
+                  <div className="flex items-center">
+                    {type.icon}
+                    <span className="ml-2">{type.label}</span>
+                  </div>
+                ),
               }))}
               value={currentSource.type}
               onChange={(e) => {
@@ -120,12 +154,14 @@ const CarbonCalculator: React.FC = () => {
               onChange={(e) =>
                 setCurrentSource({
                   ...currentSource,
-                  amount: parseFloat(e.target.value),
+                  amount: parseFloat(e.target.value) || 0,
                 })
               }
               placeholder={`Enter amount in ${currentSource.unit}`}
               fullWidth
               className="border-gray-300"
+              min="0"
+              step="0.1"
             />
 
             <Button
@@ -173,12 +209,8 @@ const CarbonCalculator: React.FC = () => {
                       className="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-800 rounded-md"
                     >
                       <div className="flex items-center">
-                        {sourceType && (
-                          <span className="mr-2">
-                            {sourceType.icon()}
-                          </span>
-                        )}
-                        <span className="text-sm text-gray-600 dark:text-gray-300">
+                        {sourceType?.icon}
+                        <span className="ml-2 text-sm text-gray-600 dark:text-gray-300">
                           {sourceType?.label}
                         </span>
                       </div>

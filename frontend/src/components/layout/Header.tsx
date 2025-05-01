@@ -1,13 +1,13 @@
 import React from 'react';
-import { Leaf, LogOut, Award } from 'lucide-react'; // Import Award icon
+import { Leaf, LogOut, Award, BarChart2 } from 'lucide-react'; // Added BarChart2 for Impact Dashboard
 import ThemeToggle from '../ui/ThemeToggle';
 import Button from '../ui/Button';
 import { useAuth } from '../../context/AuthContext';
 
 interface HeaderProps {
   onOpenAuthModal?: () => void;
-  activePage: 'dashboard' | 'marketplace' | 'projects' | 'news' | 'calculator'; // <-- Added 'calculator'
-  onPageChange: (page: 'dashboard' | 'marketplace' | 'projects' | 'news' | 'calculator') => void; // <-- Added 'calculator'
+  activePage: 'dashboard' | 'marketplace' | 'projects' | 'news' | 'calculator' | 'impact'; // Added 'impact'
+  onPageChange: (page: 'dashboard' | 'marketplace' | 'projects' | 'news' | 'calculator' | 'impact') => void; // Added 'impact'
 }
 
 const Header: React.FC<HeaderProps> = ({ 
@@ -34,17 +34,19 @@ const Header: React.FC<HeaderProps> = ({
               { key: 'marketplace', label: 'Marketplace' },
               { key: 'projects', label: 'Carbon Projects' },
               { key: 'news', label: 'Market News' },
-              { key: 'calculator', label: 'Carbon Calculator' }, // <-- Added this
-            ].map(({ key, label }) => (
+              { key: 'calculator', label: 'Carbon Calculator' },
+              { key: 'impact', label: 'Impact Dashboard', icon: <BarChart2 className="h-4 w-4 mr-1" /> }, // Added Impact Dashboard
+            ].map(({ key, label, icon }) => (
               <button
                 key={key}
-                className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                className={`px-3 py-2 rounded-md text-sm font-medium transition-colors flex items-center ${
                   activePage === key
                     ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200'
                     : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
                 }`}
                 onClick={() => onPageChange(key as HeaderProps['activePage'])}
               >
+                {icon && <span className="mr-1">{icon}</span>}
                 {label}
               </button>
             ))}
