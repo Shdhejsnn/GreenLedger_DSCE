@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { ThemeProvider } from './context/ThemeContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { CarbonPriceProvider } from './context/CarbonPriceContext';
-import { EnvironmentalProvider } from './context/EnvironmentalContext'; // <-- Only this new import
+import { EnvironmentalProvider } from './context/EnvironmentalContext';
 import Header from './components/layout/Header';
 import Footer from './components/layout/Footer';
 import LandingPage from './components/landing/LandingPage';
@@ -11,11 +11,13 @@ import Marketplace from './components/dashboard/Marketplace';
 import CarbonProjects from './components/carbon/CarbonProjects';
 import CarbonNews from './components/carbon/CarbonNews';
 import CarbonCalculator from './components/calculator/CarbonCalculator';
-import ImpactDashboard from './components/impact/ImpactDashboard'; // <-- Only this new component
+import ImpactDashboard from './components/impact/ImpactDashboard';
+import GreenScore from './components/dashboard/GreenScore'; // <-- Added GreenScore import
 import Modal from './components/ui/Modal';
 import RegisterLogin from './components/auth/RegisterLogin';
 
-type Page = 'dashboard' | 'marketplace' | 'projects' | 'news' | 'calculator' | 'impact'; // <-- Added 'impact'
+// Added 'green-score' to the Page type
+type Page = 'dashboard' | 'marketplace' | 'projects' | 'news' | 'calculator' | 'impact' | 'green-score';
 
 const AppContent: React.FC = () => {
   const { isLoggedIn } = useAuth();
@@ -42,7 +44,8 @@ const AppContent: React.FC = () => {
             'projects': <CarbonProjects />,
             'news': <CarbonNews />,
             'calculator': <CarbonCalculator />,
-            'impact': <ImpactDashboard /> // <-- Added this route
+            'impact': <ImpactDashboard />,
+            'green-score': <GreenScore /> // <-- Added GreenScore route
           }[activePage]
         ) : (
           <LandingPage onOpenAuthModal={() => setShowAuthModal(true)} />
@@ -67,7 +70,7 @@ function App() {
     <ThemeProvider>
       <AuthProvider>
         <CarbonPriceProvider>
-          <EnvironmentalProvider> {/* <-- Only this new provider */}
+          <EnvironmentalProvider>
             <AppContent />
           </EnvironmentalProvider>
         </CarbonPriceProvider>

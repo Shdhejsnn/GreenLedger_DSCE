@@ -1,13 +1,13 @@
 import React from 'react';
-import { Leaf, LogOut, Award, BarChart2 } from 'lucide-react'; // Added BarChart2 for Impact Dashboard
+import { Leaf, LogOut, Award, BarChart2, BadgeCheck } from 'lucide-react';
 import ThemeToggle from '../ui/ThemeToggle';
 import Button from '../ui/Button';
 import { useAuth } from '../../context/AuthContext';
 
 interface HeaderProps {
   onOpenAuthModal?: () => void;
-  activePage: 'dashboard' | 'marketplace' | 'projects' | 'news' | 'calculator' | 'impact'; // Added 'impact'
-  onPageChange: (page: 'dashboard' | 'marketplace' | 'projects' | 'news' | 'calculator' | 'impact') => void; // Added 'impact'
+  activePage: 'dashboard' | 'marketplace' | 'projects' | 'news' | 'calculator' | 'impact' | 'green-score';
+  onPageChange: (page: 'dashboard' | 'marketplace' | 'projects' | 'news' | 'calculator' | 'impact' | 'green-score') => void;
 }
 
 const Header: React.FC<HeaderProps> = ({ 
@@ -35,7 +35,8 @@ const Header: React.FC<HeaderProps> = ({
               { key: 'projects', label: 'Carbon Projects' },
               { key: 'news', label: 'Market News' },
               { key: 'calculator', label: 'Carbon Calculator' },
-              { key: 'impact', label: 'Impact Dashboard', icon: <BarChart2 className="h-4 w-4 mr-1" /> }, // Added Impact Dashboard
+              { key: 'impact', label: 'Impact Dashboard', icon: <BarChart2 className="h-4 w-4 mr-1" /> },
+              { key: 'green-score', label: 'Green Score', icon: <BadgeCheck className="h-4 w-4 mr-1" /> }
             ].map(({ key, label, icon }) => (
               <button
                 key={key}
